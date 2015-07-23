@@ -113,6 +113,7 @@ public class Command implements CommandExecutor {
                 player.sendMessage(prefix, Texts.of(TextColors.RED, "You do not have permission!"));
                 return CommandResult.success();
             }
+
             //TODO Finish Delete Command.
             return CommandResult.success();
         }
