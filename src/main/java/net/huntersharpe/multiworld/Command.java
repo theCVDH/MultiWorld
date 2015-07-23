@@ -10,6 +10,7 @@ import org.spongepowered.api.util.command.args.CommandContext;
 import org.spongepowered.api.util.command.spec.CommandExecutor;
 import org.spongepowered.api.world.DimensionType;
 import org.spongepowered.api.world.DimensionTypes;
+import org.spongepowered.api.world.World;
 
 /**
  * Created by user on 7/22/2015.
@@ -113,7 +114,16 @@ public class Command implements CommandExecutor {
                 player.sendMessage(prefix, Texts.of(TextColors.RED, "You do not have permission!"));
                 return CommandResult.success();
             }
-
+            if(args.length != 2){
+                sendHelp(player);
+                return CommandResult.success();
+            }
+            if(!MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).isPresent()){
+                player.sendMessage(prefix, Texts.of(TextColors.RED, "World: ", args[2], " does not exist!"));
+                return CommandResult.success();
+            }
+            World world = MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).get();
+            WorldHandler.getInstance().deleteDimension(player, world);
             //TODO Finish Delete Command.
             return CommandResult.success();
         }

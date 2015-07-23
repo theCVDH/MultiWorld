@@ -95,4 +95,12 @@ public class WorldHandler {
         player.sendMessage(prefix, Texts.of(TextColors.GREEN, "Loaded"));
     }
 
+    public void deleteDimension(Player player, World world){
+        game.getServer().unloadWorld(world);
+        //TODO: Actually Delete world files.
+        //TODO: Confirmation message & Scheduler that only allows 30 seconds to delete.
+        player.sendMessage(prefix, Texts.of(TextColors.GREEN, "Deleting world..."));
+        player.sendMessage(prefix, Texts.of(TextColors.GREEN, "Deleted world"));
+    }
+
 }
