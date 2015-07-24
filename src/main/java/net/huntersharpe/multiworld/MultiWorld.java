@@ -27,6 +27,8 @@ import java.util.logging.Logger;
 @Plugin(id = "multiworld", name = "MultiWorld", version = "1.0")
 public class MultiWorld {
 
+    public double mwVersion = 1.4;
+
     @Inject
     private Logger logger;
 
@@ -204,7 +206,7 @@ public class MultiWorld {
                 config = configManager.load();
 
                 //TODO: Add config values
-                config.getNode("multiworld", "version").setValue(version);
+                config.getNode("multiworld", "version").setValue(mwVersion);
                 configManager.save(config);
             }
             config = configManager.load();

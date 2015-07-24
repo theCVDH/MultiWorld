@@ -191,7 +191,7 @@ public class Command implements CommandExecutor {
             return CommandResult.success();
         }
         if(args[0].equalsIgnoreCase("version")){
-            player.sendMessage(prefix, Texts.of(MultiWorld.getInstance().version));
+            player.sendMessage(prefix, Texts.of(MultiWorld.getInstance().mwVersion));
         }
         return CommandResult.success();
     }
