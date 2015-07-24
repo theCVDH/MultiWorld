@@ -1,5 +1,6 @@
 package net.huntersharpe.multiworld;
 
+import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
@@ -10,6 +11,7 @@ import org.spongepowered.api.util.command.args.CommandContext;
 import org.spongepowered.api.util.command.spec.CommandExecutor;
 import org.spongepowered.api.world.DimensionType;
 import org.spongepowered.api.world.DimensionTypes;
+import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 /**
@@ -31,13 +33,13 @@ public class Command implements CommandExecutor {
             src.sendMessage(Texts.of("You cannot use these commands."));
             return CommandResult.success();
         }
-        Player player = (Player)((Player) src).getPlayer();
+        Player player = ((Player) src).getPlayer().get();
         if(!player.hasPermission("multiworld.use")){
             player.sendMessage(prefix, Texts.of(TextColors.RED, "You do not have permission!"));
             return CommandResult.success();
         }
         String[] args = arguments.toString().split(" ");
-        if(args.length > 4 || args.length == 0){
+        if(args.length > 5 || args.length == 0){
             sendHelp(player);
             return CommandResult.success();
         }
@@ -142,6 +144,54 @@ public class Command implements CommandExecutor {
             }
             //TODO: Finish helpMenu method and Help command.
             return CommandResult.success();
+        }
+        if(args[0].equalsIgnoreCase("tp")){
+            if(!player.hasPermission("multiworld.tp")){
+                player.sendMessage(prefix, Texts.of(TextColors.RED, "You do not have permission!"));
+                return CommandResult.success();
+            }
+            if(args.length != 5){
+                sendHelp(player);
+                return CommandResult.success();
+            }
+            if(!MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).isPresent()){
+                player.sendMessage(prefix, Texts.of(TextColors.RED, "World does not exist!"));
+                return CommandResult.success();
+            }
+            World world = MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).get();
+            if(!isNumeric(args[1]) || !isNumeric(args[2]) || !isNumeric(args[3])){
+                player.sendMessage(prefix, Texts.of(TextColors.RED, "Not a valid location!"));
+                return CommandResult.success();
+            }
+            double x = Double.parseDouble(args[2]);
+            double y = Double.parseDouble(args[3]);
+            double z = Double.parseDouble(args[4]);
+            Location loc = new Location(world, x, y, z);
+            player.setLocation(loc);
+            player.sendMessage(prefix, Texts.of(TextColors.GREEN, "Joining World: ", world.getName()));
+            return CommandResult.success();
+        }
+        if(args[0].equalsIgnoreCase("join")){
+            if(!player.hasPermission("multiworld.join")){
+                player.sendMessage(prefix, Texts.of(TextColors.RED, "You do not have permission!"));
+                return CommandResult.success();
+            }
+            if(args.length != 2){
+                sendHelp(player);
+                return CommandResult.success();
+            }
+            if(!MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).isPresent()){
+                player.sendMessage(prefix, Texts.of(TextColors.RED, "World does not exist!"));
+                return CommandResult.success();
+            }
+            World world = MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).get();
+            Vector3d vec = world.getSpawnLocation().getPosition();
+            player.transferToWorld(world.getName(), vec);
+            player.sendMessage(prefix, Texts.of(TextColors.GREEN, "Joining World: ", world.getName()));
+            return CommandResult.success();
+        }
+        if(args[0].equalsIgnoreCase("version")){
+            player.sendMessage(prefix, Texts.of(MultiWorld.getInstance().version));
         }
         return CommandResult.success();
     }
