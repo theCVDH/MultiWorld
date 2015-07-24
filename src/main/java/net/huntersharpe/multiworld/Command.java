@@ -19,15 +19,6 @@ import org.spongepowered.api.world.World;
  */
 public class Command implements CommandExecutor {
 
-    private Text prefix = Texts.of(
-            TextColors.DARK_GRAY,
-            "[",
-            TextColors.BLUE,
-            "MultiWorld",
-            TextColors.DARK_GRAY,
-            "] "
-    );
-
     public CommandResult execute(CommandSource src, CommandContext arguments){
         if(!(src instanceof Player)){
             src.sendMessage(Texts.of("You cannot use these commands."));
@@ -35,7 +26,7 @@ public class Command implements CommandExecutor {
         }
         Player player = ((Player) src).getPlayer().get();
         if(!player.hasPermission("multiworld.use")){
-            player.sendMessage(prefix, Texts.of(TextColors.RED, "You do not have permission!"));
+            player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "You do not have permission!"));
             return CommandResult.success();
         }
         String[] args = arguments.toString().split(" ");
@@ -45,7 +36,7 @@ public class Command implements CommandExecutor {
         }
         if(args[0].equalsIgnoreCase("create")){
             if(!player.hasPermission("multiworld.use.create")){
-                player.sendMessage(prefix, Texts.of(TextColors.RED, "You do not have permission!"));
+                player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "You do not have permission!"));
                 return CommandResult.success();
             }
             if(args.length > 4){
@@ -58,7 +49,7 @@ public class Command implements CommandExecutor {
                 //TODO: Add flat world.
                 if(!args[2].equalsIgnoreCase("normal") || !args[2].equalsIgnoreCase("end") || !args[2].equalsIgnoreCase("nether")){
                     sendHelp(player);
-                    player.sendMessage(prefix, Texts.of(TextColors.RED, args[2], " is not a valid dimension type!"));
+                    player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, args[2], " is not a valid dimension type!"));
                     return CommandResult.success();
                 }else{
                     if(args[2].equalsIgnoreCase("normal")){
@@ -81,12 +72,12 @@ public class Command implements CommandExecutor {
             } else if(args.length == 4){
                 if(!args[2].equalsIgnoreCase("normal") || !args[2].equalsIgnoreCase("end") || !args[2].equalsIgnoreCase("nether")){
                     sendHelp(player);
-                    player.sendMessage(prefix, Texts.of(TextColors.RED, args[2], " is not a valid dimension type!"));
+                    player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, args[2], " is not a valid dimension type!"));
                     return CommandResult.success();
                 }
                 if(!isNumeric(args[3])){
                     sendHelp(player);
-                    player.sendMessage(prefix, Texts.of(TextColors.RED, args[3], " is not a valid seed!"));
+                    player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, args[3], " is not a valid seed!"));
                     return CommandResult.success();
                 }
                 if(args[2].equalsIgnoreCase("normal")){
@@ -113,7 +104,7 @@ public class Command implements CommandExecutor {
         }
         if(args[0].equalsIgnoreCase("delete")){
             if(!player.hasPermission("multiworld.use.delete")){
-                player.sendMessage(prefix, Texts.of(TextColors.RED, "You do not have permission!"));
+                player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "You do not have permission!"));
                 return CommandResult.success();
             }
             if(args.length != 2){
@@ -121,7 +112,7 @@ public class Command implements CommandExecutor {
                 return CommandResult.success();
             }
             if(!MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).isPresent()){
-                player.sendMessage(prefix, Texts.of(TextColors.RED, "World: ", args[2], " does not exist!"));
+                player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "World: ", args[2], " does not exist!"));
                 return CommandResult.success();
             }
             World world = MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).get();
@@ -131,7 +122,7 @@ public class Command implements CommandExecutor {
         }
         if(args[0].equalsIgnoreCase("modify")){
             if(!player.hasPermission("multiworld.use.modify")){
-                player.sendMessage(prefix, Texts.of(TextColors.RED, "You do not have permission!"));
+                player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "You do not have permission!"));
                 return CommandResult.success();
             }
             //TODO: Finish Modify Command.
@@ -139,7 +130,7 @@ public class Command implements CommandExecutor {
         }
         if(args[0].equalsIgnoreCase("help")){
             if(!player.hasPermission("multiworld.help")){
-                player.sendMessage(prefix, Texts.of(TextColors.RED, "You do not have permission!"));
+                player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "You do not have permission!"));
                 return CommandResult.success();
             }
             //TODO: Finish helpMenu method and Help command.
@@ -147,7 +138,7 @@ public class Command implements CommandExecutor {
         }
         if(args[0].equalsIgnoreCase("tp")){
             if(!player.hasPermission("multiworld.tp")){
-                player.sendMessage(prefix, Texts.of(TextColors.RED, "You do not have permission!"));
+                player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "You do not have permission!"));
                 return CommandResult.success();
             }
             if(args.length != 5){
@@ -155,12 +146,12 @@ public class Command implements CommandExecutor {
                 return CommandResult.success();
             }
             if(!MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).isPresent()){
-                player.sendMessage(prefix, Texts.of(TextColors.RED, "World does not exist!"));
+                player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "World does not exist!"));
                 return CommandResult.success();
             }
             World world = MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).get();
             if(!isNumeric(args[1]) || !isNumeric(args[2]) || !isNumeric(args[3])){
-                player.sendMessage(prefix, Texts.of(TextColors.RED, "Not a valid location!"));
+                player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "Not a valid location!"));
                 return CommandResult.success();
             }
             double x = Double.parseDouble(args[2]);
@@ -168,12 +159,12 @@ public class Command implements CommandExecutor {
             double z = Double.parseDouble(args[4]);
             Location loc = new Location(world, x, y, z);
             player.setLocation(loc);
-            player.sendMessage(prefix, Texts.of(TextColors.GREEN, "Joining World: ", world.getName()));
+            player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GREEN, "Joining World: ", world.getName()));
             return CommandResult.success();
         }
         if(args[0].equalsIgnoreCase("join")){
             if(!player.hasPermission("multiworld.join")){
-                player.sendMessage(prefix, Texts.of(TextColors.RED, "You do not have permission!"));
+                player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "You do not have permission!"));
                 return CommandResult.success();
             }
             if(args.length != 2){
@@ -181,23 +172,23 @@ public class Command implements CommandExecutor {
                 return CommandResult.success();
             }
             if(!MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).isPresent()){
-                player.sendMessage(prefix, Texts.of(TextColors.RED, "World does not exist!"));
+                player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "World does not exist!"));
                 return CommandResult.success();
             }
             World world = MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).get();
             Vector3d vec = world.getSpawnLocation().getPosition();
             player.transferToWorld(world.getName(), vec);
-            player.sendMessage(prefix, Texts.of(TextColors.GREEN, "Joining World: ", world.getName()));
+            player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GREEN, "Joining World: ", world.getName()));
             return CommandResult.success();
         }
         if(args[0].equalsIgnoreCase("version")){
-            player.sendMessage(prefix, Texts.of(MultiWorld.getInstance().mwVersion));
+            player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", MultiWorld.getInstance().mwVersion));
         }
         return CommandResult.success();
     }
 
     public void sendHelp(Player player){
-        player.sendMessage(prefix, Texts.of(TextColors.RED, "Incorrect Usage! Use /mw help for more info."));
+        player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "Incorrect Usage! Use /mw help for more info."));
     }
 
     public void helpMenu(Player player){

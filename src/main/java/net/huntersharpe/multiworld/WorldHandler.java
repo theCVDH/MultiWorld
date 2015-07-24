@@ -19,15 +19,6 @@ public class WorldHandler {
 
     private World world;
 
-    private Text prefix = Texts.of(
-            TextColors.DARK_GRAY,
-            "[",
-            TextColors.BLUE,
-            "MultiWorld",
-            TextColors.DARK_GRAY,
-            "] "
-    );
-
     private static WorldHandler instance;
 
     public static WorldHandler getInstance(){
@@ -37,7 +28,7 @@ public class WorldHandler {
     //Create default world with custom name.
     public void createDimension(Player p, String name){
         if(game.getServer().getWorld(name).isPresent()){
-            p.sendMessage(prefix, Texts.of(TextColors.RED, "World already exists!"));
+            p.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "World already exists!"));
             return;
         }
         world = (World) builder.name(name).build();
@@ -50,11 +41,11 @@ public class WorldHandler {
     //Create world with: Name-Custom World
     public void createDimension(Player p, String name, String type){
         if(game.getServer().getWorld(name).isPresent()){
-            p.sendMessage(prefix, Texts.of(TextColors.RED, "World already exists!"));
+            p.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "World already exists!"));
             return;
         }
         if(type != "-t"){
-            p.sendMessage(prefix, Texts.of(TextColors.RED, "Incorrect World Type! Use /mw help."));
+            p.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "Incorrect World Type! Use /mw help."));
             return;
         }
     }
@@ -62,7 +53,7 @@ public class WorldHandler {
     //Create world with: Name-Dimension type
     public void createDimension(Player p, String name, DimensionType type){
         if(game.getServer().getWorld(name).isPresent()){
-            p.sendMessage(prefix, Texts.of(TextColors.RED, "World already exists!"));
+            p.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "World already exists!"));
             return;
         }
         world = (World) builder.name(name).dimensionType(type).build();
@@ -75,7 +66,7 @@ public class WorldHandler {
     //Create world with: Name-Dimension-Seed
     public void createDimension(Player p, String name, DimensionType type, Long seed){
         if(game.getServer().getWorld(name).isPresent()){
-            p.sendMessage(prefix, Texts.of(TextColors.RED, "World already exists!"));
+            p.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "World already exists!"));
             return;
         }
         world = (World) builder.name(name).dimensionType(type).seed(seed).enabled(true).build();
@@ -86,21 +77,21 @@ public class WorldHandler {
     }
 
     public void sendCreated(Player player){
-        player.sendMessage(prefix, Texts.of(TextColors.GRAY, "Creating World..."));
-        player.sendMessage(prefix, Texts.of(TextColors.GREEN, "Created!"));
+        player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GRAY, "Creating World..."));
+        player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GREEN, "Created!"));
     }
 
     public void sendLoaded(Player player){
-        player.sendMessage(prefix, Texts.of(TextColors.GRAY, "Loading World..."));
-        player.sendMessage(prefix, Texts.of(TextColors.GREEN, "Loaded"));
+        player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GRAY, "Loading World..."));
+        player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GREEN, "Loaded"));
     }
 
     public void deleteDimension(Player player, World world){
         game.getServer().unloadWorld(world);
         //TODO: Actually Delete world files.
         //TODO: Confirmation message & Scheduler that only allows 30 seconds to delete.
-        player.sendMessage(prefix, Texts.of(TextColors.GREEN, "Deleting world..."));
-        player.sendMessage(prefix, Texts.of(TextColors.GREEN, "Deleted world"));
+        player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GREEN, "Deleting world..."));
+        player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GREEN, "Deleted world"));
     }
 
 }
