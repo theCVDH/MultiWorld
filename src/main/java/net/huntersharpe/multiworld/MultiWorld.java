@@ -24,10 +24,10 @@ import java.util.logging.Logger;
 /**
  * Created by user on 7/22/2015.
  */
-@Plugin(id = "multiworld", name = "MultiWorld", version = "1.6")
+@Plugin(id = "multiworld", name = "MultiWorld", version = "1.7")
 public class MultiWorld {
 
-    public double mwVersion = 1.6;
+    public double mwVersion = 1.7;
 
     @Inject
     private Logger logger;
@@ -55,109 +55,6 @@ public class MultiWorld {
         return instance;
     }
 
-    // /mw create <name> [type] [seed] Commad
-    CommandSpec createSeed = CommandSpec.builder()
-            .description(Texts.of("Create a world"))
-            .executor(new Command())
-            .build();
-    CommandSpec createType = CommandSpec.builder()
-            .description(Texts.of("Create a world"))
-            .executor(new Command())
-            .child(createSeed)
-            .build();
-    CommandSpec createName = CommandSpec.builder()
-            .description(Texts.of("Create a world"))
-            .executor(new Command())
-            .child(createType)
-            .build();
-    CommandSpec create = CommandSpec.builder()
-            .description(Texts.of("Create a world"))
-            .executor(new Command())
-            .child(createName)
-            .build();
-    // /mw delete <name> command
-    CommandSpec delName = CommandSpec.builder()
-            .description(Texts.of("Delete a world"))
-            .executor(new Command())
-            .build();
-    CommandSpec delete = CommandSpec.builder()
-            .description(Texts.of("Delete a world"))
-            .executor(new Command())
-            .child(delName)
-            .build();
-    // /mw help command
-    CommandSpec help = CommandSpec.builder()
-            .description(Texts.of("MultiWorld help Command"))
-            .executor(new Command())
-            .build();
-    // /mw modify <type> <value> command
-    CommandSpec modValue = CommandSpec.builder()
-            .description(Texts.of("Modify your current world"))
-            .executor(new Command())
-            .build();
-    CommandSpec modType = CommandSpec.builder()
-            .description(Texts.of("Modify your current world"))
-            .permission("multiworld.modify")
-            .child(modValue)
-            .build();
-    CommandSpec modify = CommandSpec.builder()
-            .description(Texts.of("Modify your current world"))
-            .executor(new Command())
-            .child(modType)
-            .build();
-    // /mw version command
-    CommandSpec version = CommandSpec.builder()
-            .description(Texts.of("MultiWorld version"))
-            .executor(new Command())
-            .build();
-    // /tp <world> <x> <y> <z> command.
-    CommandSpec tpZ = CommandSpec.builder()
-            .description(Texts.of("Teleport to a world at an exact location"))
-            .executor(new Command())
-            .build();
-    CommandSpec tpY = CommandSpec.builder()
-            .description(Texts.of("Teleport to a world at an exact location"))
-            .executor(new Command())
-            .child(tpZ)
-            .build();
-    CommandSpec tpX = CommandSpec.builder()
-            .description(Texts.of("Teleport to a world at an exact location"))
-            .executor(new Command())
-            .child(tpY)
-            .build();
-    CommandSpec tpWorld = CommandSpec.builder()
-            .description(Texts.of("Teleport to a world at an exact location"))
-            .executor(new Command())
-            .child(tpX)
-            .build();
-    CommandSpec tp = CommandSpec.builder()
-            .description(Texts.of("Teleport to a world at an exact location"))
-            .executor(new Command())
-            .child(tpWorld)
-            .build();
-    // /join <world> command
-    CommandSpec joinWorld = CommandSpec.builder()
-            .description(Texts.of("Join a world at its spawn."))
-            .executor(new Command())
-            .build();
-    CommandSpec join = CommandSpec.builder()
-            .description(Texts.of("Join a world at its spawn."))
-            .executor(new Command())
-            .child(joinWorld)
-            .build();
-    CommandSpec mwCommandSpec = CommandSpec.builder()
-            .description(Texts.of("MultiWorld Command"))
-            .executor(new Command())
-            //TODO: Add all children
-            .child(create, "create")
-            .child(delete, "delete")
-            .child(modify, "modify")
-            .child(version, "version")
-            .child(tp, "tp")
-            .child(join, "join")
-            .child(help, "help")
-            .build();
-
     @Subscribe
     public void onPreInit(PreInitializationEvent e){
         setupConfig();
@@ -165,7 +62,7 @@ public class MultiWorld {
 
     @Subscribe
     public void onInit(InitializationEvent e){
-        game.getCommandDispatcher().register(this, mwCommandSpec, "mw", "multiworld");
+        game.getCommandDispatcher().register(this, CommandRegistry.getRegistry().mwCommandSpec, "mw", "multiworld");
     }
 
     @Subscribe
