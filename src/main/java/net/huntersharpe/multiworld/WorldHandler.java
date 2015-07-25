@@ -2,11 +2,11 @@ package net.huntersharpe.multiworld;
 
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.player.Player;
-import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.world.*;
-import org.spongepowered.api.world.gen.GeneratorPopulator;
+import org.spongepowered.api.world.DimensionType;
+import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.WorldBuilder;
 
 /**
  * Created by user on 7/22/2015.

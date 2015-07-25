@@ -2,7 +2,6 @@ package net.huntersharpe.multiworld;
 
 import com.flowpowered.math.vector.Vector3d;
 import org.spongepowered.api.entity.player.Player;
-import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.util.command.CommandResult;
