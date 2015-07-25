@@ -62,7 +62,7 @@ public class MultiWorld {
             .executor(new Command())
             .arguments(GenericArguments.seq(
                     GenericArguments.string(Texts.of("name")),
-                    GenericArguments.dimension(Texts.of("type"), MultiWorld.getInstance().getGame()),
+                    GenericArguments.dimension(Texts.of("type"), game),
                     GenericArguments.integer(Texts.of("seed"))
             ))
             .build();
@@ -93,13 +93,13 @@ public class MultiWorld {
     CommandSpec tp = CommandSpec.builder()
             .description(Texts.of("Teleport to a world at an exact location"))
             .executor(new Command())
-            .arguments(GenericArguments.seq(GenericArguments.world(Texts.of("world"), MultiWorld.getInstance().getGame()), GenericArguments.integer(Texts.of("x")), GenericArguments.integer(Texts.of("y")), GenericArguments.integer(Texts.of("z"))))
+            .arguments(GenericArguments.seq(GenericArguments.world(Texts.of("world"), game), GenericArguments.integer(Texts.of("x")), GenericArguments.integer(Texts.of("y")), GenericArguments.integer(Texts.of("z"))))
             .build();
     // /join <world> command
     CommandSpec join = CommandSpec.builder()
             .description(Texts.of("Join a world at its spawn."))
             .executor(new Command())
-            .arguments(GenericArguments.world(Texts.of("world"), MultiWorld.getInstance().getGame()))
+            .arguments(GenericArguments.world(Texts.of("world"), game))
             .build();
     public CommandSpec mwCommandSpec = CommandSpec.builder()
             .description(Texts.of("MultiWorld Command"))
