@@ -13,7 +13,10 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.service.config.ConfigDir;
 import org.spongepowered.api.service.config.DefaultConfig;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.util.command.CommandCallable;
+import org.spongepowered.api.util.command.CommandMapping;
 import org.spongepowered.api.util.command.args.GenericArguments;
+import org.spongepowered.api.util.command.dispatcher.SimpleDispatcher;
 import org.spongepowered.api.util.command.spec.CommandSpec;
 
 import java.io.File;
@@ -25,10 +28,10 @@ import java.util.logging.Logger;
 /**
  * Created by user on 7/22/2015.
  */
-@Plugin(id = "multiworld", name = "MultiWorld", version = "1.7")
+@Plugin(id = "multiworld", name = "MultiWorld", version = "1.8")
 public class MultiWorld {
 
-    public double mwVersion = 1.7;
+    public double mwVersion = 1.8;
 
     @Inject
     private Logger logger;
@@ -55,8 +58,8 @@ public class MultiWorld {
     public static MultiWorld getInstance(){
         return instance;
     }
-
-    // /mw create <name> [type] [seed] Commad
+    /*
+    // /mw create <name> [type] [seed] Command
     CommandSpec create = CommandSpec.builder()
             .description(Texts.of("Create a world"))
             .executor(new Command())
@@ -101,26 +104,29 @@ public class MultiWorld {
             .executor(new Command())
             .arguments(GenericArguments.world(Texts.of("world"), game))
             .build();
-    public CommandSpec mwCommandSpec = CommandSpec.builder()
+    CommandSpec mwCommandSpec = CommandSpec.builder()
             .description(Texts.of("MultiWorld Command"))
             .executor(new Command())
-            .child(create, "create")
+            /*.child(create, "create")
             .child(delete, "delete")
             .child(modify, "modify")
             .child(version, "version")
             .child(tp, "tp")
             .child(join, "join")
             .child(help, "help")
-            .build();
+            .build();*/
 
     @Subscribe
     public void onPreInit(PreInitializationEvent e){
         setupConfig();
     }
 
+
+
     @Subscribe
     public void onInit(InitializationEvent e){
-        game.getCommandDispatcher().register(this, mwCommandSpec, "mw", "multiworld");
+        SimpleDispatcher mw = new SimpleDispatcher();
+        game.getCommandDispatcher().register(this, mw, "mw", "multiworld");
     }
 
     @Subscribe
