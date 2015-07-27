@@ -28,6 +28,7 @@ public class Create implements CommandCallable{
     public CommandResult process(CommandSource src, String s) throws CommandException {
         if(!(src instanceof Player)){
             sendHelp(src);
+            return CommandResult.success();
         }
         Player player = ((Player) src).getPlayer().get();
         String[] args = s.split(" ");
