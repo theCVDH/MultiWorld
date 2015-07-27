@@ -1,6 +1,7 @@
 package net.huntersharpe.multiworld;
 
 import com.google.inject.Inject;
+import net.huntersharpe.multiworld.subcommands.*;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -125,7 +126,17 @@ public class MultiWorld {
 
     @Subscribe
     public void onInit(InitializationEvent e){
+        CommandCallable create = new Create();
+        CommandCallable delete = new Delete();
+        CommandCallable modify = new Modify();
+        CommandCallable join = new Join();
+        CommandCallable tp = new Tp();
         SimpleDispatcher mw = new SimpleDispatcher();
+        mw.register(create, "create");
+        mw.register(delete, "delete", "del");
+        mw.register(modify, "modify");
+        mw.register(join, "join");
+        mw.register(tp, "tp");
         game.getCommandDispatcher().register(this, mw, "mw", "multiworld");
     }
 
