@@ -36,11 +36,11 @@ public class Join implements CommandCallable {
             sendHelp(player);
             return CommandResult.success();
         }
-        if(!MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).isPresent()){
+        if(!MultiWorld.getInstance().getGame().getServer().getWorld(args[0]).isPresent()){
             player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "World does not exist!"));
             return CommandResult.success();
         }
-        World world = MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).get();
+        World world = MultiWorld.getInstance().getGame().getServer().getWorld(args[0]).get();
         Vector3d vec = world.getSpawnLocation().getPosition();
         player.transferToWorld(world.getName(), vec);
         player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GREEN, "Joining World: ", world.getName()));

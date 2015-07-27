@@ -35,18 +35,18 @@ public class Tp implements CommandCallable {
             sendHelp(player);
             return CommandResult.success();
         }
-        if(!MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).isPresent()){
+        if(!MultiWorld.getInstance().getGame().getServer().getWorld(args[0]).isPresent()){
             player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "World does not exist!"));
             return CommandResult.success();
         }
-        World world = MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).get();
+        World world = MultiWorld.getInstance().getGame().getServer().getWorld(args[0]).get();
         if(!isNumeric(args[1]) || !isNumeric(args[2]) || !isNumeric(args[3])){
             player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "Not a valid location!"));
             return CommandResult.success();
         }
-        double x = Double.parseDouble(args[2]);
-        double y = Double.parseDouble(args[3]);
-        double z = Double.parseDouble(args[4]);
+        double x = Double.parseDouble(args[1]);
+        double y = Double.parseDouble(args[2]);
+        double z = Double.parseDouble(args[3]);
         Location loc = new Location(world, x, y, z);
         player.setLocation(loc);
         player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GREEN, "Joining World: ", world.getName()));

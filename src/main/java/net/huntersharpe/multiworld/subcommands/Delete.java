@@ -37,7 +37,7 @@ public class Delete implements CommandCallable{
             return CommandResult.success();
         }
         if(!MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).isPresent()){
-            player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "World: ", args[2], " does not exist!"));
+            player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "World: ", args[0], " does not exist!"));
             return CommandResult.success();
         }
         World world = MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).get();
