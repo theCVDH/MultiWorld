@@ -29,10 +29,10 @@ import java.util.logging.Logger;
 /**
  * Created by user on 7/22/2015.
  */
-@Plugin(id = "multiworld", name = "MultiWorld", version = "1.8")
+@Plugin(id = "multiworld", name = "MultiWorld", version = "1.9")
 public class MultiWorld {
 
-    public double mwVersion = 1.8;
+    public double mwVersion = 1.9;
 
     @Inject
     private Logger logger;

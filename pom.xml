@@ -6,7 +6,7 @@
 
     <groupId>net.huntersharpe.multiworld</groupId>
     <artifactId>MultiWorld</artifactId>
-    <version>1.8-SNAPSHOT</version>
+    <version>1.9-SNAPSHOT</version>
     <repositories>
         <repository>
             <id>sponge-maven-repo</id>
