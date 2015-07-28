@@ -4,6 +4,7 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.world.Chunk;
 import org.spongepowered.api.world.DimensionType;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.WorldBuilder;
@@ -19,10 +20,14 @@ public class WorldHandler {
 
     private World world;
 
-    private static WorldHandler instance;
+    private static WorldHandler instance = new WorldHandler();
 
     public static WorldHandler getInstance(){
         return instance;
+    }
+
+    public WorldHandler(){
+        instance = this;
     }
 
     //Create default world with custom name.
@@ -31,10 +36,11 @@ public class WorldHandler {
             p.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "World already exists!"));
             return;
         }
-        world = (World) builder.name(name).build();
+        world = builder.name(name).build().get();
         game.getServer().createWorld(world.getCreationSettings());
         sendCreated(p);
-        game.getServer().loadWorld(world.getProperties());
+        //game.getServer().loadWorld(world.getName());
+        world.loadChunk(world.getSpawnLocation().getBlockX(), world.getSpawnLocation().getBlockY(), world.getSpawnLocation().getBlockZ(), true);
         sendLoaded(p);
     }
 
@@ -56,10 +62,11 @@ public class WorldHandler {
             p.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "World already exists!"));
             return;
         }
-        world = (World) builder.name(name).dimensionType(type).build();
+        world = builder.name(name).dimensionType(type).build().get();
         game.getServer().createWorld(world.getCreationSettings());
         sendCreated(p);
-        game.getServer().loadWorld(world.getProperties());
+        //game.getServer().loadWorld(world.getProperties());
+        world.loadChunk(world.getSpawnLocation().getBlockX(), world.getSpawnLocation().getBlockY(), world.getSpawnLocation().getBlockZ(), true);
         sendLoaded(p);
     }
 
@@ -69,10 +76,11 @@ public class WorldHandler {
             p.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "World already exists!"));
             return;
         }
-        world = (World) builder.name(name).dimensionType(type).seed(seed).enabled(true).build();
+        world = builder.name(name).dimensionType(type).seed(seed).enabled(true).build().get();
         game.getServer().createWorld(world.getCreationSettings());
         sendCreated(p);
-        game.getServer().loadWorld(world.getProperties());
+        //game.getServer().loadWorld(world.getProperties());
+        world.loadChunk(world.getSpawnLocation().getBlockX(), world.getSpawnLocation().getBlockY(), world.getSpawnLocation().getBlockZ(), true);
         sendLoaded(p);
     }
 

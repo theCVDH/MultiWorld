@@ -31,8 +31,8 @@ public class Create implements CommandCallable{
             return CommandResult.success();
         }
         Player player = ((Player) src).getPlayer().get();
-        String[] args = s.split(" ");
-        if(args.length > 3 || args.length == 0){
+        String[] args = s.split(" ", 3);
+        if(args.length > 3 || args.length == 0 || args[0].equalsIgnoreCase("")){
             sendHelp(src);
             return CommandResult.success();
         }
@@ -41,22 +41,22 @@ public class Create implements CommandCallable{
             return CommandResult.success();
         }else if(args.length == 2){
             //TODO: Add flat world.
-            if(!args[1].equalsIgnoreCase("normal") || !args[1].equalsIgnoreCase("end") || !args[1].equalsIgnoreCase("nether")){
+            if(!args[1].equalsIgnoreCase("normal") && !args[1].equalsIgnoreCase("end") && !args[1].equalsIgnoreCase("nether")){
                 sendHelp(player);
                 player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, args[1], " is not a valid dimension type!"));
                 return CommandResult.success();
             }else{
-                if(args[2].equalsIgnoreCase("normal")){
+                if(args[1].equalsIgnoreCase("normal")){
                     DimensionType type = DimensionTypes.OVERWORLD;
                     WorldHandler.getInstance().createDimension(player, args[0], type);
                     return CommandResult.success();
                 }
-                if(args[2].equalsIgnoreCase("nether")){
+                if(args[1].equalsIgnoreCase("nether")){
                     DimensionType type = DimensionTypes.NETHER;
                     WorldHandler.getInstance().createDimension(player, args[0], type);
                     return CommandResult.success();
                 }
-                if(args[2].equalsIgnoreCase("end")){
+                if(args[1].equalsIgnoreCase("end")){
                     DimensionType type = DimensionTypes.END;
                     WorldHandler.getInstance().createDimension(player, args[0], type);
                     CommandResult.success();
@@ -64,9 +64,9 @@ public class Create implements CommandCallable{
                 return CommandResult.success();
             }
         } else if(args.length == 3){
-            if(!args[1].equalsIgnoreCase("normal") || !args[1].equalsIgnoreCase("end") || !args[1].equalsIgnoreCase("nether")){
+            if(!args[1].equalsIgnoreCase("normal") && !args[1].equalsIgnoreCase("end") && !args[1].equalsIgnoreCase("nether")){
                 sendHelp(player);
-                player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, args[2], " is not a valid dimension type!"));
+                player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, args[1], " is not a valid dimension type!"));
                 return CommandResult.success();
             }
             if(!isNumeric(args[2])){
@@ -76,7 +76,7 @@ public class Create implements CommandCallable{
             }
             if(args[1].equalsIgnoreCase("normal")){
                 DimensionType type = DimensionTypes.OVERWORLD;
-                long seed = Long.parseLong(args[2]);
+                long seed = Long.parseLong(args[3]);
                 WorldHandler.getInstance().createDimension(player, args[0], type, seed);
                 return CommandResult.success();
             }

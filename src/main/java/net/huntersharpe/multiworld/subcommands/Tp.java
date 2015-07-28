@@ -30,7 +30,7 @@ public class Tp implements CommandCallable {
             return CommandResult.success();
         }
         Player player = ((Player) commandSource).getPlayer().get();
-        String[] args = s.split(" ");
+        String[] args = s.split(" ", 4);
         if(args.length != 4){
             sendHelp(player);
             return CommandResult.success();
@@ -44,10 +44,11 @@ public class Tp implements CommandCallable {
             player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "Not a valid location!"));
             return CommandResult.success();
         }
-        double x = Double.parseDouble(args[1]);
-        double y = Double.parseDouble(args[2]);
-        double z = Double.parseDouble(args[3]);
+        int x = Integer.parseInt(args[1]);
+        int y = Integer.parseInt(args[2]);
+        int z = Integer.parseInt(args[3]);
         Location loc = new Location(world, x, y, z);
+        world.loadChunk(x, y, z, true);
         player.setLocation(loc);
         player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GREEN, "Joining World: ", world.getName()));
         return CommandResult.success();

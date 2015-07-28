@@ -54,7 +54,11 @@ public class MultiWorld {
 
     private ConfigurationNode config = null;
 
-    private static MultiWorld instance;
+    private static MultiWorld instance = new MultiWorld();
+
+    public MultiWorld(){
+        instance = this;
+    }
 
     public static MultiWorld getInstance(){
         return instance;
@@ -131,12 +135,18 @@ public class MultiWorld {
         CommandCallable modify = new Modify();
         CommandCallable join = new Join();
         CommandCallable tp = new Tp();
+        CommandCallable list = new List();
+        CommandCallable help = new Help();
+        CommandCallable info = new Info();
         SimpleDispatcher mw = new SimpleDispatcher();
         mw.register(create, "create");
         mw.register(delete, "delete", "del");
         mw.register(modify, "modify");
         mw.register(join, "join");
         mw.register(tp, "tp");
+        mw.register(list, "list");
+        mw.register(help, "help");
+        mw.register(info, "info");
         game.getCommandDispatcher().register(this, mw, "mw", "multiworld");
     }
 

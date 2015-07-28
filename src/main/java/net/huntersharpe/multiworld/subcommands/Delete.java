@@ -30,18 +30,19 @@ public class Delete implements CommandCallable{
             sendHelp(src);
             return CommandResult.success();
         }
-        String[] args = s.split(" ");
+        String[] args = s.split(" ", 1);
         Player player = ((Player) src).getPlayer().get();
-        if(args.length != 1){
+        if(args.length != 1 || args[0].equalsIgnoreCase("")){
             sendHelp(player);
             return CommandResult.success();
         }
-        if(!MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).isPresent()){
+        if(!MultiWorld.getInstance().getGame().getServer().getWorld(args[0]).isPresent()){
             player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "World: ", args[0], " does not exist!"));
             return CommandResult.success();
         }
-        World world = MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).get();
+        World world = MultiWorld.getInstance().getGame().getServer().getWorld(args[0]).get();
         WorldHandler.getInstance().deleteDimension(player, world);
+        MultiWorld.getInstance().getGame().getServer().getWorlds().remove(world);
         //TODO Finish Delete Command.
         return CommandResult.success();
     }

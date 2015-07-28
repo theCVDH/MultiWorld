@@ -31,7 +31,7 @@ public class Join implements CommandCallable {
             return CommandResult.success();
         }
         Player player = ((Player) src).getPlayer().get();
-        String[] args = s.split(" ");
+        String[] args = s.split(" ", 1);
         if(args.length != 1){
             sendHelp(player);
             return CommandResult.success();
