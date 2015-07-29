@@ -1,10 +1,14 @@
 package net.huntersharpe.multiworld;
 
 import com.flowpowered.math.vector.Vector3d;
+import com.google.common.base.Optional;
+import org.spongepowered.api.Server;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
+import org.spongepowered.api.util.command.CommandCallable;
+import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.CommandSource;
 import org.spongepowered.api.util.command.args.CommandContext;
@@ -14,28 +18,32 @@ import org.spongepowered.api.world.DimensionTypes;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Created by user on 7/22/2015.
  */
-public class Command implements CommandExecutor {
+public class Command implements CommandCallable {
 
-    private Text prefix = Texts.of(
-            TextColors.DARK_GRAY,
-            "[",
-            TextColors.BLUE,
-            "MultiWorld",
-            TextColors.DARK_GRAY,
-            "] "
-    );
+    private final Optional<Text> desc = Optional.of((Text) Texts.of("Multi World Command."));
+    private final Optional<Text> help = Optional.of((Text) Texts.of("Used to create/delete/modify worlds."));
+    private final Text usage = (Text) Texts.of("<create|delete|modify|join|tp|help>");
 
-    public CommandResult execute(CommandSource src, CommandContext arguments){
+    private final Server server;
+
+    public Command(Server server){
+        this.server = server;
+    }
+
+    public CommandResult process(CommandSource src, String arguments){
         if(!(src instanceof Player)){
-            src.sendMessage(Texts.of("You cannot use these commands."));
+            src.sendMessage(Texts.of("You cannot use these subcommands."));
             return CommandResult.success();
         }
         Player player = ((Player) src).getPlayer().get();
         if(!player.hasPermission("multiworld.use")){
-            player.sendMessage(prefix, Texts.of(TextColors.RED, "You do not have permission!"));
+            player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "You do not have permission!"));
             return CommandResult.success();
         }
         String[] args = arguments.toString().split(" ");
@@ -43,161 +51,32 @@ public class Command implements CommandExecutor {
             sendHelp(player);
             return CommandResult.success();
         }
-        if(args[0].equalsIgnoreCase("create")){
-            if(!player.hasPermission("multiworld.use.create")){
-                player.sendMessage(prefix, Texts.of(TextColors.RED, "You do not have permission!"));
-                return CommandResult.success();
-            }
-            if(args.length > 4){
-                sendHelp(player);
-                return CommandResult.success();
-            }else if(args.length == 2){
-                WorldHandler.getInstance().createDimension(player, args[1]);
-                return CommandResult.success();
-            }else if(args.length == 3){
-                //TODO: Add flat world.
-                if(!args[2].equalsIgnoreCase("normal") || !args[2].equalsIgnoreCase("end") || !args[2].equalsIgnoreCase("nether")){
-                    sendHelp(player);
-                    player.sendMessage(prefix, Texts.of(TextColors.RED, args[2], " is not a valid dimension type!"));
-                    return CommandResult.success();
-                }else{
-                    if(args[2].equalsIgnoreCase("normal")){
-                        DimensionType type = DimensionTypes.OVERWORLD;
-                        WorldHandler.getInstance().createDimension(player, args[1], type);
-                        return CommandResult.success();
-                    }
-                    if(args[2].equalsIgnoreCase("nether")){
-                        DimensionType type = DimensionTypes.NETHER;
-                        WorldHandler.getInstance().createDimension(player, args[1], type);
-                        return CommandResult.success();
-                    }
-                    if(args[2].equalsIgnoreCase("end")){
-                        DimensionType type = DimensionTypes.END;
-                        WorldHandler.getInstance().createDimension(player, args[1], type);
-                        CommandResult.success();
-                    }
-                    return CommandResult.success();
-                }
-            } else if(args.length == 4){
-                if(!args[2].equalsIgnoreCase("normal") || !args[2].equalsIgnoreCase("end") || !args[2].equalsIgnoreCase("nether")){
-                    sendHelp(player);
-                    player.sendMessage(prefix, Texts.of(TextColors.RED, args[2], " is not a valid dimension type!"));
-                    return CommandResult.success();
-                }
-                if(!isNumeric(args[3])){
-                    sendHelp(player);
-                    player.sendMessage(prefix, Texts.of(TextColors.RED, args[3], " is not a valid seed!"));
-                    return CommandResult.success();
-                }
-                if(args[2].equalsIgnoreCase("normal")){
-                    DimensionType type = DimensionTypes.OVERWORLD;
-                    long seed = Long.parseLong(args[3]);
-                    WorldHandler.getInstance().createDimension(player, args[1], type, seed);
-                    return CommandResult.success();
-                }
-                if(args[2].equalsIgnoreCase("nether")){
-                    DimensionType type = DimensionTypes.NETHER;
-                    long seed = Long.parseLong(args[3]);
-                    WorldHandler.getInstance().createDimension(player, args[1], type, seed);
-                    return CommandResult.success();
-                }
-                if(args[2].equalsIgnoreCase("end")){
-                    DimensionType type = DimensionTypes.END;
-                    long seed = Long.parseLong(args[3]);
-                    WorldHandler.getInstance().createDimension(player, args[1], type, seed);
-                    CommandResult.success();
-                }
-                return CommandResult.success();
-            }
-            return CommandResult.success();
-        }
-        if(args[0].equalsIgnoreCase("delete")){
-            if(!player.hasPermission("multiworld.use.delete")){
-                player.sendMessage(prefix, Texts.of(TextColors.RED, "You do not have permission!"));
-                return CommandResult.success();
-            }
-            if(args.length != 2){
-                sendHelp(player);
-                return CommandResult.success();
-            }
-            if(!MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).isPresent()){
-                player.sendMessage(prefix, Texts.of(TextColors.RED, "World: ", args[2], " does not exist!"));
-                return CommandResult.success();
-            }
-            World world = MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).get();
-            WorldHandler.getInstance().deleteDimension(player, world);
-            //TODO Finish Delete Command.
-            return CommandResult.success();
-        }
-        if(args[0].equalsIgnoreCase("modify")){
-            if(!player.hasPermission("multiworld.use.modify")){
-                player.sendMessage(prefix, Texts.of(TextColors.RED, "You do not have permission!"));
-                return CommandResult.success();
-            }
-            //TODO: Finish Modify Command.
-            return CommandResult.success();
-        }
-        if(args[0].equalsIgnoreCase("help")){
-            if(!player.hasPermission("multiworld.help")){
-                player.sendMessage(prefix, Texts.of(TextColors.RED, "You do not have permission!"));
-                return CommandResult.success();
-            }
-            //TODO: Finish helpMenu method and Help command.
-            return CommandResult.success();
-        }
-        if(args[0].equalsIgnoreCase("tp")){
-            if(!player.hasPermission("multiworld.tp")){
-                player.sendMessage(prefix, Texts.of(TextColors.RED, "You do not have permission!"));
-                return CommandResult.success();
-            }
-            if(args.length != 5){
-                sendHelp(player);
-                return CommandResult.success();
-            }
-            if(!MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).isPresent()){
-                player.sendMessage(prefix, Texts.of(TextColors.RED, "World does not exist!"));
-                return CommandResult.success();
-            }
-            World world = MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).get();
-            if(!isNumeric(args[1]) || !isNumeric(args[2]) || !isNumeric(args[3])){
-                player.sendMessage(prefix, Texts.of(TextColors.RED, "Not a valid location!"));
-                return CommandResult.success();
-            }
-            double x = Double.parseDouble(args[2]);
-            double y = Double.parseDouble(args[3]);
-            double z = Double.parseDouble(args[4]);
-            Location loc = new Location(world, x, y, z);
-            player.setLocation(loc);
-            player.sendMessage(prefix, Texts.of(TextColors.GREEN, "Joining World: ", world.getName()));
-            return CommandResult.success();
-        }
-        if(args[0].equalsIgnoreCase("join")){
-            if(!player.hasPermission("multiworld.join")){
-                player.sendMessage(prefix, Texts.of(TextColors.RED, "You do not have permission!"));
-                return CommandResult.success();
-            }
-            if(args.length != 2){
-                sendHelp(player);
-                return CommandResult.success();
-            }
-            if(!MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).isPresent()){
-                player.sendMessage(prefix, Texts.of(TextColors.RED, "World does not exist!"));
-                return CommandResult.success();
-            }
-            World world = MultiWorld.getInstance().getGame().getServer().getWorld(args[1]).get();
-            Vector3d vec = world.getSpawnLocation().getPosition();
-            player.transferToWorld(world.getName(), vec);
-            player.sendMessage(prefix, Texts.of(TextColors.GREEN, "Joining World: ", world.getName()));
-            return CommandResult.success();
-        }
-        if(args[0].equalsIgnoreCase("version")){
-            player.sendMessage(prefix, Texts.of(MultiWorld.getInstance().mwVersion));
-        }
+        player.sendMessage(Texts.of(TextColors.BLUE, "MultiWorld version: " + MultiWorld.getInstance().mwVersion));
         return CommandResult.success();
     }
 
+    public boolean testPermission(CommandSource source) {
+        return source.hasPermission("multiworld.use");
+    }
+
+    public Optional<Text> getShortDescription(CommandSource source) {
+        return desc;
+    }
+
+    public Optional<Text> getHelp(CommandSource source) {
+        return help;
+    }
+
+    public Text getUsage(CommandSource source) {
+        return usage;
+    }
+
+    public List<String> getSuggestions(CommandSource source, String arguments) throws CommandException {
+        return Collections.emptyList();
+    }
+
     public void sendHelp(Player player){
-        player.sendMessage(prefix, Texts.of(TextColors.RED, "Incorrect Usage! Use /mw help for more info."));
+        player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "Incorrect Usage! Use /mw help for more info."));
     }
 
     public void helpMenu(Player player){

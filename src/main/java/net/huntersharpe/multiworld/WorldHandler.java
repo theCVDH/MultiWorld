@@ -1,12 +1,20 @@
 package net.huntersharpe.multiworld;
 
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.commented.CommentedConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.entity.player.Player;
-import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.*;
-import org.spongepowered.api.world.gen.GeneratorPopulator;
+import org.spongepowered.api.world.gen.WorldGenerator;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileSystemAlreadyExistsException;
 
 /**
  * Created by user on 7/22/2015.
@@ -19,88 +27,162 @@ public class WorldHandler {
 
     private World world;
 
-    private Text prefix = Texts.of(
-            TextColors.DARK_GRAY,
-            "[",
-            TextColors.BLUE,
-            "MultiWorld",
-            TextColors.DARK_GRAY,
-            "] "
-    );
-
-    private static WorldHandler instance;
+    private static WorldHandler instance = new WorldHandler();
 
     public static WorldHandler getInstance(){
         return instance;
     }
 
+    public WorldHandler(){
+        instance = this;
+    }
+
     //Create default world with custom name.
-    public void createDimension(Player p, String name){
+    public void createDimension(Player p, String name, boolean flat){
         if(game.getServer().getWorld(name).isPresent()){
-            p.sendMessage(prefix, Texts.of(TextColors.RED, "World already exists!"));
+            p.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "World already exists!"));
             return;
         }
-        world = (World) builder.name(name).build();
-        game.getServer().createWorld(world.getCreationSettings());
+        builder.name(name).enabled(true).build().get();
+        GeneratorType generatorType = null;
+        if(flat == true){
+            generatorType = GeneratorTypes.FLAT;
+        }
+        builder.generator(generatorType);
+        game.getServer().createWorld(builder.buildSettings());
+        setConfigValues(world, name);
+        deleteLock(name);
         sendCreated(p);
-        game.getServer().loadWorld(world.getProperties());
+        game.getServer().loadWorld(builder.buildSettings().getWorldName());
+        builder.loadsOnStartup(true);
+        builder.keepsSpawnLoaded(true);
+        world.loadChunk(world.getSpawnLocation().getBlockX(), world.getSpawnLocation().getBlockY(), world.getSpawnLocation().getBlockZ(), true);
         sendLoaded(p);
     }
 
     //Create world with: Name-Custom World
-    public void createDimension(Player p, String name, String type){
+    /*public void createDimension(Player p, String name, String type){
         if(game.getServer().getWorld(name).isPresent()){
-            p.sendMessage(prefix, Texts.of(TextColors.RED, "World already exists!"));
+            p.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "World already exists!"));
             return;
         }
         if(type != "-t"){
-            p.sendMessage(prefix, Texts.of(TextColors.RED, "Incorrect World Type! Use /mw help."));
+            p.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "Incorrect World Type! Use /mw help."));
             return;
         }
-    }
+    }*/
 
     //Create world with: Name-Dimension type
-    public void createDimension(Player p, String name, DimensionType type){
+    public void createDimension(Player p, String name, DimensionType type, boolean flat){
         if(game.getServer().getWorld(name).isPresent()){
-            p.sendMessage(prefix, Texts.of(TextColors.RED, "World already exists!"));
+            p.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "World already exists!"));
             return;
         }
-        world = (World) builder.name(name).dimensionType(type).build();
-        game.getServer().createWorld(world.getCreationSettings());
+        builder.name(name).dimensionType(type).enabled(true).build().get();
+        GeneratorType generatorType = null;
+        if(type.equals(DimensionTypes.OVERWORLD)){
+            if(flat == true){
+                generatorType = GeneratorTypes.FLAT;
+            }else{
+                generatorType = GeneratorTypes.OVERWORLD;
+            }
+            generatorType = GeneratorTypes.OVERWORLD;
+        }else if(type.equals(DimensionTypes.NETHER)){
+            generatorType = GeneratorTypes.NETHER;
+        }else if(type.equals(DimensionTypes.END)){
+            generatorType = GeneratorTypes.END;
+        }
+        builder.generator(generatorType);
+        game.getServer().createWorld(builder.buildSettings());
+        setConfigValues(world, name);
+        deleteLock(name);
         sendCreated(p);
-        game.getServer().loadWorld(world.getProperties());
+        game.getServer().loadWorld(builder.buildSettings().getWorldName());
+        builder.loadsOnStartup(true);
+        builder.keepsSpawnLoaded(true);
+        world.loadChunk(world.getSpawnLocation().getBlockX(), world.getSpawnLocation().getBlockY(), world.getSpawnLocation().getBlockZ(), true);
         sendLoaded(p);
     }
 
     //Create world with: Name-Dimension-Seed
-    public void createDimension(Player p, String name, DimensionType type, Long seed){
+    public void createDimension(Player p, String name, DimensionType type, Long seed, boolean flat){
         if(game.getServer().getWorld(name).isPresent()){
-            p.sendMessage(prefix, Texts.of(TextColors.RED, "World already exists!"));
+            p.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, "World already exists!"));
             return;
         }
-        world = (World) builder.name(name).dimensionType(type).seed(seed).enabled(true).build();
-        game.getServer().createWorld(world.getCreationSettings());
+        builder.name(name).dimensionType(type).seed(seed).enabled(true).build().get();
+        GeneratorType generatorType = null;
+        if(type.equals(DimensionTypes.OVERWORLD)){
+            if(flat == true){
+                generatorType = GeneratorTypes.FLAT;
+            }else{
+                generatorType = GeneratorTypes.OVERWORLD;
+            }
+            generatorType = GeneratorTypes.OVERWORLD;
+        }else if(type.equals(DimensionTypes.NETHER)){
+            generatorType = GeneratorTypes.NETHER;
+        }else if(type.equals(DimensionTypes.END)){
+            generatorType = GeneratorTypes.END;
+        }
+        builder.generator(generatorType);
+        game.getServer().createWorld(builder.buildSettings());
+        setConfigValues(world, name);
+        deleteLock(name);
         sendCreated(p);
-        game.getServer().loadWorld(world.getProperties());
+        game.getServer().loadWorld(builder.buildSettings().getWorldName());
+        builder.loadsOnStartup(true);
+        builder.keepsSpawnLoaded(true);
+        world.loadChunk(world.getSpawnLocation().getBlockX(), world.getSpawnLocation().getBlockY(), world.getSpawnLocation().getBlockZ(), true);
         sendLoaded(p);
     }
 
     public void sendCreated(Player player){
-        player.sendMessage(prefix, Texts.of(TextColors.GRAY, "Creating World..."));
-        player.sendMessage(prefix, Texts.of(TextColors.GREEN, "Created!"));
+        player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GRAY, "Creating World..."));
+        player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GREEN, "Created!"));
     }
 
     public void sendLoaded(Player player){
-        player.sendMessage(prefix, Texts.of(TextColors.GRAY, "Loading World..."));
-        player.sendMessage(prefix, Texts.of(TextColors.GREEN, "Loaded"));
+        player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GRAY, "Loading World..."));
+        player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GREEN, "Loaded"));
     }
 
     public void deleteDimension(Player player, World world){
         game.getServer().unloadWorld(world);
         //TODO: Actually Delete world files.
         //TODO: Confirmation message & Scheduler that only allows 30 seconds to delete.
-        player.sendMessage(prefix, Texts.of(TextColors.GREEN, "Deleting world..."));
-        player.sendMessage(prefix, Texts.of(TextColors.GREEN, "Deleted world"));
+        player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GREEN, "Deleting world..."));
+        player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GREEN, "Deleted world"));
     }
 
+    public void setConfigValues(World world, String name){
+        //TODO: Fix configuration writing.
+        File potentialFile = new File("../mods/bountyhunter.conf");
+        ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(potentialFile).build();
+        ConfigurationNode rootNode;
+        try {
+            rootNode = loader.load();
+        } catch(IOException e) {
+            rootNode = null;
+        }
+        rootNode.getNode("multiworld", "worlds", world.getName(), "name").setValue(name);
+        rootNode.getNode("multiworld", "worlds", world.getName(), "type").setValue(world.getDimension().getType().toString());
+        rootNode.getNode("multiworld", "worlds", world.getName(), "seed").setValue(world.getProperties().getSeed());
+        rootNode.getNode("multiworld", "worlds", world.getName(), "gamemode").setValue(world.getProperties().getGameMode().toString());
+        rootNode.getNode("multiworld", "worlds", world.getName(), "difficulty").setValue(world.getProperties().getDifficulty().toString());
+        rootNode.getNode("multiworld", "worlds", world.getName(), "spawn_location", "x").setValue(world.getSpawnLocation().getX());
+        rootNode.getNode("multiworld", "worlds", world.getName(), "spawn_location", "y").setValue(world.getSpawnLocation().getY());
+        rootNode.getNode("multiworld", "worlds", world.getName(), "spawn_location", "z").setValue(world.getSpawnLocation().getZ());
+
+    }
+    public void deleteLock(String name){
+        File file = null;
+        try{
+            file = new File("../" + name + "session.lock");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        if(file.exists()){
+            file.delete();
+        }
+    }
 }

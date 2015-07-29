@@ -1,6 +1,7 @@
 package net.huntersharpe.multiworld;
 
 import com.google.inject.Inject;
+import net.huntersharpe.multiworld.subcommands.*;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -14,20 +15,26 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.service.config.ConfigDir;
 import org.spongepowered.api.service.config.DefaultConfig;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.util.command.CommandCallable;
+import org.spongepowered.api.util.command.CommandMapping;
+import org.spongepowered.api.util.command.args.GenericArguments;
+import org.spongepowered.api.util.command.dispatcher.SimpleDispatcher;
 import org.spongepowered.api.util.command.spec.CommandSpec;
+import org.spongepowered.api.world.World;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
  * Created by user on 7/22/2015.
  */
-@Plugin(id = "multiworld", name = "MultiWorld", version = "1.0")
+@Plugin(id = "multiworld", name = "MultiWorld", version = "1.9")
 public class MultiWorld {
 
-    public double mwVersion = 1.4;
+    public double mwVersion = 1.9;
 
     @Inject
     private Logger logger;
@@ -38,7 +45,7 @@ public class MultiWorld {
 
     @Inject
     @DefaultConfig(sharedRoot = false)
-    private File defaultConf;
+    public File defaultConf;
 
     @Inject
     @DefaultConfig(sharedRoot = false)
@@ -47,149 +54,121 @@ public class MultiWorld {
     @Inject
     private Game game;
 
-    private ConfigurationNode config = null;
+    public ConfigurationNode config = null;
 
-    private static MultiWorld instance;
+    private static MultiWorld instance = new MultiWorld();
+
+    public MultiWorld(){
+        instance = this;
+    }
 
     public static MultiWorld getInstance(){
         return instance;
     }
-
-    // /mw create <name> [type] [seed] Commad
-    CommandSpec createSeed = CommandSpec.builder()
-            .description(Texts.of("Create a world"))
-            .permission("multiword.use.create")
-            .executor(new Command())
-            .build();
-    CommandSpec createType = CommandSpec.builder()
-            .description(Texts.of("Create a world"))
-            .permission("multiword.use.create")
-            .executor(new Command())
-            .child(createSeed)
-            .build();
-    CommandSpec createName = CommandSpec.builder()
-            .description(Texts.of("Create a world"))
-            .permission("multiword.use.create")
-            .executor(new Command())
-            .child(createType)
-            .build();
+    /*
+    // /mw create <name> [type] [seed] Command
     CommandSpec create = CommandSpec.builder()
             .description(Texts.of("Create a world"))
-            .permission("multiword.use.create")
             .executor(new Command())
-            .child(createName)
+            .arguments(GenericArguments.seq(
+                    GenericArguments.string(Texts.of("name")),
+                    GenericArguments.dimension(Texts.of("type"), game),
+                    GenericArguments.integer(Texts.of("seed"))
+            ))
             .build();
     // /mw delete <name> command
-    CommandSpec delName = CommandSpec.builder()
-            .description(Texts.of("Delete a world"))
-            .permission("multiword.use.delete")
-            .executor(new Command())
-            .build();
     CommandSpec delete = CommandSpec.builder()
             .description(Texts.of("Delete a world"))
-            .permission("multiword.use.delete")
             .executor(new Command())
-            .child(delName)
+            .arguments(GenericArguments.string(Texts.of("name")))
             .build();
     // /mw help command
     CommandSpec help = CommandSpec.builder()
             .description(Texts.of("MultiWorld help Command"))
-            .permission("multiword.help")
             .executor(new Command())
             .build();
     // /mw modify <type> <value> command
-    CommandSpec modValue = CommandSpec.builder()
-            .description(Texts.of("Modify your current world"))
-            .permission("multiword.modify")
-            .executor(new Command())
-            .build();
-    CommandSpec modType = CommandSpec.builder()
-            .description(Texts.of("Modify your current world"))
-            .permission("multiworld.modify")
-            .executor(new Command())
-            .child(modValue)
-            .build();
+    Map<String, Boolean> choices = new HashMap<String, Boolean>();
     CommandSpec modify = CommandSpec.builder()
             .description(Texts.of("Modify your current world"))
-            .permission("multiword.modify")
             .executor(new Command())
-            .child(modType)
+            .arguments(GenericArguments.seq(GenericArguments.string(Texts.of("type")), GenericArguments.choices(Texts.of("value"), choices)))
             .build();
     // /mw version command
     CommandSpec version = CommandSpec.builder()
             .description(Texts.of("MultiWorld version"))
-            .permission("multiword.version")
             .executor(new Command())
             .build();
     // /tp <world> <x> <y> <z> command.
-    CommandSpec tpZ = CommandSpec.builder()
-            .description(Texts.of("Teleport to a world at an exact location"))
-            .permission("multiword.tp")
-            .executor(new Command())
-            .build();
-    CommandSpec tpY = CommandSpec.builder()
-            .description(Texts.of("Teleport to a world at an exact location"))
-            .permission("multiword.tp")
-            .executor(new Command())
-            .child(tpZ)
-            .build();
-    CommandSpec tpX = CommandSpec.builder()
-            .description(Texts.of("Teleport to a world at an exact location"))
-            .permission("multiword.tp")
-            .executor(new Command())
-            .child(tpY)
-            .build();
-    CommandSpec tpWorld = CommandSpec.builder()
-            .description(Texts.of("Teleport to a world at an exact location"))
-            .permission("multiword.tp")
-            .executor(new Command())
-            .child(tpX)
-            .build();
     CommandSpec tp = CommandSpec.builder()
             .description(Texts.of("Teleport to a world at an exact location"))
-            .permission("multiword.tp")
             .executor(new Command())
-            .child(tpWorld)
+            .arguments(GenericArguments.seq(GenericArguments.world(Texts.of("world"), game), GenericArguments.integer(Texts.of("x")), GenericArguments.integer(Texts.of("y")), GenericArguments.integer(Texts.of("z"))))
             .build();
     // /join <world> command
-    CommandSpec joinWorld = CommandSpec.builder()
-            .description(Texts.of("Join a world at its spawn."))
-            .permission("multiword.join")
-            .executor(new Command())
-            .build();
     CommandSpec join = CommandSpec.builder()
             .description(Texts.of("Join a world at its spawn."))
-            .permission("multiword.join")
             .executor(new Command())
-            .child(joinWorld)
+            .arguments(GenericArguments.world(Texts.of("world"), game))
             .build();
     CommandSpec mwCommandSpec = CommandSpec.builder()
             .description(Texts.of("MultiWorld Command"))
-            .permission("multiword.use")
             .executor(new Command())
-            //TODO: Add all children
-            .child(create, "create")
+            /*.child(create, "create")
             .child(delete, "delete")
             .child(modify, "modify")
             .child(version, "version")
             .child(tp, "tp")
             .child(join, "join")
             .child(help, "help")
-            .build();
+            .build();*/
 
     @Subscribe
     public void onPreInit(PreInitializationEvent e){
         setupConfig();
     }
 
+
+
     @Subscribe
     public void onInit(InitializationEvent e){
-        game.getCommandDispatcher().register(this, mwCommandSpec, "mw", "multiworld");
+        CommandCallable create = new Create();
+        CommandCallable delete = new Delete();
+        CommandCallable modify = new Modify();
+        CommandCallable join = new Join();
+        CommandCallable tp = new Tp();
+        CommandCallable list = new List();
+        CommandCallable help = new Help();
+        CommandCallable info = new Info();
+        SimpleDispatcher mw = new SimpleDispatcher();
+        mw.register(create, "create");
+        mw.register(delete, "delete", "del");
+        mw.register(modify, "modify");
+        mw.register(join, "join");
+        mw.register(tp, "tp");
+        mw.register(list, "list");
+        mw.register(help, "help");
+        mw.register(info, "info");
+        game.getCommandDispatcher().register(this, mw, "mw", "multiworld");
     }
 
     @Subscribe
     public void onServerStart(ServerStartingEvent e){
+        for(World world : game.getServer().getWorlds()){
+            if(world.getName().equalsIgnoreCase("world") || world.getName().equalsIgnoreCase("DIM1") || world.getName().equalsIgnoreCase("DIM-1")){
+                return;
+            }
+            game.getServer().loadWorld(world.getName());
+        }
         logger.info("Multi World Loaded!");
+    }
+
+    @Subscribe
+    public void onServerStopping(ServerStoppingEvent e){
+        for(World world : game.getServer().getWorlds()){
+            String name = world.getProperties().getWorldName();
+            deleteLockFiles(name);
+        }
     }
 
     public Game getGame(){
@@ -207,11 +186,27 @@ public class MultiWorld {
 
                 //TODO: Add config values
                 config.getNode("multiworld", "version").setValue(mwVersion);
+                config.getNode("multiworld", "worlds").setValue(" ");
                 configManager.save(config);
             }
             config = configManager.load();
         } catch (IOException e) {
             logger.warning("Default Config could not be loaded/created!");
         }
+    }
+    public void deleteLockFiles(String name){
+        File lockFile = null;
+        try{
+            lockFile = new File("../world/" + name + "/session.lock");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        if(lockFile.exists()){
+            lockFile.delete();
+        }
+    }
+
+    public ConfigurationNode getConfigNode(){
+        return config;
     }
 }
