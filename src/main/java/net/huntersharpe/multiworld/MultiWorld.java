@@ -10,6 +10,7 @@ import org.spongepowered.api.event.Subscribe;
 import org.spongepowered.api.event.state.InitializationEvent;
 import org.spongepowered.api.event.state.PreInitializationEvent;
 import org.spongepowered.api.event.state.ServerStartingEvent;
+import org.spongepowered.api.event.state.ServerStoppingEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.service.config.ConfigDir;
 import org.spongepowered.api.service.config.DefaultConfig;
@@ -19,6 +20,7 @@ import org.spongepowered.api.util.command.CommandMapping;
 import org.spongepowered.api.util.command.args.GenericArguments;
 import org.spongepowered.api.util.command.dispatcher.SimpleDispatcher;
 import org.spongepowered.api.util.command.spec.CommandSpec;
+import org.spongepowered.api.world.World;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +45,7 @@ public class MultiWorld {
 
     @Inject
     @DefaultConfig(sharedRoot = false)
-    private File defaultConf;
+    public File defaultConf;
 
     @Inject
     @DefaultConfig(sharedRoot = false)
@@ -52,7 +54,7 @@ public class MultiWorld {
     @Inject
     private Game game;
 
-    private ConfigurationNode config = null;
+    public ConfigurationNode config = null;
 
     private static MultiWorld instance = new MultiWorld();
 
@@ -152,7 +154,21 @@ public class MultiWorld {
 
     @Subscribe
     public void onServerStart(ServerStartingEvent e){
+        for(World world : game.getServer().getWorlds()){
+            if(world.getName().equalsIgnoreCase("world") || world.getName().equalsIgnoreCase("DIM1") || world.getName().equalsIgnoreCase("DIM-1")){
+                return;
+            }
+            game.getServer().loadWorld(world.getName());
+        }
         logger.info("Multi World Loaded!");
+    }
+
+    @Subscribe
+    public void onServerStopping(ServerStoppingEvent e){
+        for(World world : game.getServer().getWorlds()){
+            String name = world.getProperties().getWorldName();
+            deleteLockFiles(name);
+        }
     }
 
     public Game getGame(){
@@ -170,11 +186,27 @@ public class MultiWorld {
 
                 //TODO: Add config values
                 config.getNode("multiworld", "version").setValue(mwVersion);
+                config.getNode("multiworld", "worlds").setValue(" ");
                 configManager.save(config);
             }
             config = configManager.load();
         } catch (IOException e) {
             logger.warning("Default Config could not be loaded/created!");
         }
+    }
+    public void deleteLockFiles(String name){
+        File lockFile = null;
+        try{
+            lockFile = new File("../world/" + name + "/session.lock");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        if(lockFile.exists()){
+            lockFile.delete();
+        }
+    }
+
+    public ConfigurationNode getConfigNode(){
+        return config;
     }
 }

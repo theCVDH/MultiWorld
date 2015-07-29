@@ -1,6 +1,7 @@
 package net.huntersharpe.multiworld.subcommands;
 
 import com.google.common.base.Optional;
+import net.huntersharpe.multiworld.Command;
 import net.huntersharpe.multiworld.WorldHandler;
 import org.spongepowered.api.entity.player.Player;
 import org.spongepowered.api.text.Text;
@@ -37,10 +38,14 @@ public class Create implements CommandCallable{
             return CommandResult.success();
         }
         if(args.length == 1){
-            WorldHandler.getInstance().createDimension(player, args[0]);
+            WorldHandler.getInstance().createDimension(player, args[0], false);
             return CommandResult.success();
         }else if(args.length == 2){
             //TODO: Add flat world.
+            if(args[1].equalsIgnoreCase("-t")){
+                WorldHandler.getInstance().createDimension(player, args[0], true);
+                return CommandResult.success();
+            }
             if(!args[1].equalsIgnoreCase("normal") && !args[1].equalsIgnoreCase("end") && !args[1].equalsIgnoreCase("nether")){
                 sendHelp(player);
                 player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, args[1], " is not a valid dimension type!"));
@@ -48,22 +53,46 @@ public class Create implements CommandCallable{
             }else{
                 if(args[1].equalsIgnoreCase("normal")){
                     DimensionType type = DimensionTypes.OVERWORLD;
-                    WorldHandler.getInstance().createDimension(player, args[0], type);
+                    WorldHandler.getInstance().createDimension(player, args[0], type, false);
                     return CommandResult.success();
                 }
                 if(args[1].equalsIgnoreCase("nether")){
                     DimensionType type = DimensionTypes.NETHER;
-                    WorldHandler.getInstance().createDimension(player, args[0], type);
+                    WorldHandler.getInstance().createDimension(player, args[0], type, false);
                     return CommandResult.success();
                 }
                 if(args[1].equalsIgnoreCase("end")){
                     DimensionType type = DimensionTypes.END;
-                    WorldHandler.getInstance().createDimension(player, args[0], type);
+                    WorldHandler.getInstance().createDimension(player, args[0], type, false);
                     CommandResult.success();
                 }
                 return CommandResult.success();
             }
         } else if(args.length == 3){
+            if(args[2].equalsIgnoreCase("-t")){
+                if(!args[1].equalsIgnoreCase("normal") && !args[1].equalsIgnoreCase("end") && !args[1].equalsIgnoreCase("nether")){
+                    sendHelp(player);
+                    player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, args[1], " is not a valid dimension type!"));
+                    return CommandResult.success();
+                }else{
+                    if(args[1].equalsIgnoreCase("normal")){
+                        DimensionType type = DimensionTypes.OVERWORLD;
+                        WorldHandler.getInstance().createDimension(player, args[0], type, true);
+                        return CommandResult.success();
+                    }
+                    if(args[1].equalsIgnoreCase("nether")){
+                        DimensionType type = DimensionTypes.NETHER;
+                        WorldHandler.getInstance().createDimension(player, args[0], type, true);
+                        return CommandResult.success();
+                    }
+                    if(args[1].equalsIgnoreCase("end")){
+                        DimensionType type = DimensionTypes.END;
+                        WorldHandler.getInstance().createDimension(player, args[0], type, true);
+                        CommandResult.success();
+                    }
+                    return CommandResult.success();
+                }
+            }
             if(!args[1].equalsIgnoreCase("normal") && !args[1].equalsIgnoreCase("end") && !args[1].equalsIgnoreCase("nether")){
                 sendHelp(player);
                 player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, args[1], " is not a valid dimension type!"));
@@ -77,20 +106,55 @@ public class Create implements CommandCallable{
             if(args[1].equalsIgnoreCase("normal")){
                 DimensionType type = DimensionTypes.OVERWORLD;
                 long seed = Long.parseLong(args[3]);
-                WorldHandler.getInstance().createDimension(player, args[0], type, seed);
+                WorldHandler.getInstance().createDimension(player, args[0], type, seed, false);
                 return CommandResult.success();
             }
             if(args[1].equalsIgnoreCase("nether")){
                 DimensionType type = DimensionTypes.NETHER;
                 long seed = Long.parseLong(args[2]);
-                WorldHandler.getInstance().createDimension(player, args[0], type, seed);
+                WorldHandler.getInstance().createDimension(player, args[0], type, seed, false);
                 return CommandResult.success();
             }
             if(args[1].equalsIgnoreCase("end")){
                 DimensionType type = DimensionTypes.END;
                 long seed = Long.parseLong(args[2]);
-                WorldHandler.getInstance().createDimension(player, args[0], type, seed);
+                WorldHandler.getInstance().createDimension(player, args[0], type, seed, false);
                 CommandResult.success();
+            }
+            return CommandResult.success();
+        } if(args.length == 4){
+            if(args[3].equalsIgnoreCase("-t")){
+                if(!args[1].equalsIgnoreCase("normal") && !args[1].equalsIgnoreCase("end") && !args[1].equalsIgnoreCase("nether")){
+                    sendHelp(player);
+                    player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, args[1], " is not a valid dimension type!"));
+                    return CommandResult.success();
+                }
+                if(!isNumeric(args[2])){
+                    sendHelp(player);
+                    player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, args[2], " is not a valid seed!"));
+                    return CommandResult.success();
+                }
+                if(args[1].equalsIgnoreCase("normal")){
+                    DimensionType type = DimensionTypes.OVERWORLD;
+                    long seed = Long.parseLong(args[3]);
+                    WorldHandler.getInstance().createDimension(player, args[0], type, seed, true);
+                    return CommandResult.success();
+                }
+                if(args[1].equalsIgnoreCase("nether")){
+                    DimensionType type = DimensionTypes.NETHER;
+                    long seed = Long.parseLong(args[2]);
+                    WorldHandler.getInstance().createDimension(player, args[0], type, seed, true);
+                    return CommandResult.success();
+                }
+                if(args[1].equalsIgnoreCase("end")){
+                    DimensionType type = DimensionTypes.END;
+                    long seed = Long.parseLong(args[2]);
+                    WorldHandler.getInstance().createDimension(player, args[0], type, seed, true);
+                    CommandResult.success();
+                }
+                return CommandResult.success();
+            }else {
+                player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, args[3] , " is not a valid flag"));
             }
             return CommandResult.success();
         }

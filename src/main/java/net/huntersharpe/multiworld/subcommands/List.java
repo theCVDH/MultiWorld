@@ -1,6 +1,7 @@
 package net.huntersharpe.multiworld.subcommands;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Splitter;
 import net.huntersharpe.multiworld.MultiWorld;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.Texts;
@@ -9,6 +10,7 @@ import org.spongepowered.api.util.command.CommandCallable;
 import org.spongepowered.api.util.command.CommandException;
 import org.spongepowered.api.util.command.CommandResult;
 import org.spongepowered.api.util.command.CommandSource;
+import org.spongepowered.api.world.World;
 
 import java.nio.channels.MulticastChannel;
 import java.util.ArrayList;
@@ -26,16 +28,16 @@ public class List implements CommandCallable{
     private final Text usage = (Text) Texts.of("");
 
     public CommandResult process(CommandSource src, String s) throws CommandException {
-        String[] args = s.split(" ", 1);
-        if(args.length != 0 || !args[0].equalsIgnoreCase("")){
+        Iterable<String> splitIter = Splitter.on(" ").split(s);
+        if(!s.equals(null) && !s.isEmpty()){
             sendHelp(src);
             return CommandResult.success();
         }
-        Iterator iterator = MultiWorld.getInstance().getGame().getServer().getWorlds().iterator();
+        Iterator<World> iterator = MultiWorld.getInstance().getGame().getServer().getWorlds().iterator();
         while(iterator.hasNext()){
             //TODO: Send more user friendly name
-            Text worlds = Texts.of(iterator.next());
-            src.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GREEN, worlds));
+            String name = iterator.next().getProperties().getWorldName();
+            src.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GREEN, name));
             iterator.remove();
         }
         return CommandResult.success();
