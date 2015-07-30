@@ -77,7 +77,6 @@ public class Modify implements CommandCallable {
                 return CommandResult.success();
             }
             if(args[1].equalsIgnoreCase("true")){
-                //TODO: Add disable/enable mobs.
                 MultiWorld.getInstance().getConfigNode().getNode("multiworld", player.getWorld().getProperties().getWorldName(), "mobs").setValue(true);
                 player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GREEN, "world updated successfully."));
                 return CommandResult.success();
@@ -94,11 +93,31 @@ public class Modify implements CommandCallable {
                 player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, args[1], "is not a valid value!"));
                 return CommandResult.success();
             }
+            if(args[1].equalsIgnoreCase("true")){
+                MultiWorld.getInstance().getConfigNode().getNode("multiworld", player.getWorld().getProperties().getWorldName(), "animals").setValue(true);
+                player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GREEN, "world updated successfully."));
+                return CommandResult.success();
+            }
+            if(args[1].equalsIgnoreCase("false")){
+                MultiWorld.getInstance().getConfigNode().getNode("multiworld", player.getWorld().getProperties().getWorldName(), "animals").setValue(false);
+                player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GREEN, "world updated successfully."));
+                return CommandResult.success();
+            }
             return CommandResult.success();
         }
         if(args[0].equalsIgnoreCase("pvp")){
             if(!isBoolean(args[1])){
                 player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, args[1], "is not a valid value!"));
+                return CommandResult.success();
+            }
+            if(args[1].equalsIgnoreCase("true")){
+                MultiWorld.getInstance().getConfigNode().getNode("multiworld", player.getWorld().getProperties().getWorldName(), "pvp").setValue(true);
+                player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GREEN, "world updated successfully."));
+                return CommandResult.success();
+            }
+            if(args[1].equalsIgnoreCase("false")){
+                MultiWorld.getInstance().getConfigNode().getNode("multiworld", player.getWorld().getProperties().getWorldName(), "pvp").setValue(false);
+                player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.GREEN, "world updated successfully."));
                 return CommandResult.success();
             }
             return CommandResult.success();
@@ -108,7 +127,22 @@ public class Modify implements CommandCallable {
                 player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, args[1], "is not a valid value!"));
                 return CommandResult.success();
             }
-            //TOOD: Add weather modifications.
+            World world = player.getWorld();
+            if(args[1].equalsIgnoreCase("clear") || args[1].equalsIgnoreCase("sunny")){
+                world.getProperties().setThundering(false);
+                world.getProperties().setRaining(false);
+                player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, args[1], "is not a valid value!"));
+                return CommandResult.success();
+            }
+            if (args[1].equalsIgnoreCase("rainy") || args[1].equalsIgnoreCase("cloudy")){
+                world.getProperties().setRaining(true);
+                player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, args[1], "is not a valid value!"));
+                return CommandResult.success();
+            }else{
+                world.getProperties().setRaining(true);
+                world.getProperties().setThundering(true);
+                player.sendMessage(Texts.of(TextColors.DARK_GRAY, "[", TextColors.BLUE, "MultiWorld", TextColors.DARK_GRAY, "] ", TextColors.RED, args[1], "is not a valid value!"));
+            }
             return CommandResult.success();
         }
         return CommandResult.success();
