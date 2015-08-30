@@ -23,7 +23,7 @@ public class WorldHandler {
 
     private Game game = MultiWorld.getInstance().getGame();
 
-    private WorldBuilder builder = game.getRegistry().getWorldBuilder();
+    private WorldBuilder builder = game.getRegistry().createWorldBuilder();
 
     private World world;
 
@@ -46,6 +46,9 @@ public class WorldHandler {
         GeneratorType generatorType = null;
         if(flat == true){
             generatorType = GeneratorTypes.FLAT;
+        }
+        else{
+            generatorType = GeneratorTypes.DEFAULT;
         }
         builder.name(name).enabled(true).generator(generatorType).keepsSpawnLoaded(true).loadsOnStartup(true).build();
         game.getServer().createWorld(builder.buildSettings());
